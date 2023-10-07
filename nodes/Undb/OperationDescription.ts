@@ -11,5 +11,8 @@ export const operationFields: INodeProperties[] = [
 		default: '',
 		required: true,
 		description: 'The ID of the table',
+		typeOptions: {
+			loadOptionsMethod: 'getTables',
+		},
 	},
 ];

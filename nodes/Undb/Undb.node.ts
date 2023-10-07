@@ -1,11 +1,15 @@
 import {
+	IDataObject,
 	IExecuteFunctions,
+	ILoadOptionsFunctions,
 	INodeExecutionData,
+	INodePropertyOptions,
 	INodeType,
 	INodeTypeDescription,
 	NodeExecutionWithMetadata,
 	NodeOperationError,
 } from 'n8n-workflow';
+import { apiRequest } from './GenericFunctions';
 import { operationFields } from './OperationDescription';
 import { executeCreateRecord } from './Operations/CreateRecord';
 import { executeGetRecords } from './Operations/GetRecords';
@@ -139,6 +143,19 @@ export class Undb implements INodeType {
 			},
 			...operationFields,
 		],
+	};
+
+	methods = {
+		loadOptions: {
+			async getTables(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const responseData = await apiRequest.call(this, 'GET', '/api/v1/openapi/tables', {});
+
+				return responseData.tables.map((table: IDataObject) => ({
+					name: table.name,
+					value: table.id,
+				}));
+			},
+		},
 	};
 
 	async execute(
