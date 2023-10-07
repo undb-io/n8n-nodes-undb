@@ -1,0 +1,18 @@
+{
+	"node": "n8n-nodes-base.undb",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Data & Storage"],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://docs.undb.xyz/openapi/1tokens/#api-token"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://docs.undb.xyz/"
+			}
+		]
+	}
+}
