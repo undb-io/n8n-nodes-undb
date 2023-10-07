@@ -15,4 +15,17 @@ export const operationFields: INodeProperties[] = [
 			loadOptionsMethod: 'getTables',
 		},
 	},
+	{
+		displayName: 'Record ID',
+		name: 'recordId',
+		type: 'string',
+		default: '',
+		required: true,
+		description: 'The value of the ID',
+		displayOptions: {
+			show: {
+				operation: ['delete', 'get', 'update'],
+			},
+		},
+	},
 ];
