@@ -9,11 +9,11 @@
 	"homepage": "",
 	"author": {
 		"name": "",
-		"email": ""
+		"email": "nichenqin@hotmail.com"
 	},
 	"repository": {
 		"type": "git",
-		"url": ""
+		"url": "https://github.com/undb-xyz/n8n-nodes-undb.git"
 	},
 	"main": "index.js",
 	"scripts": {
