@@ -30,7 +30,8 @@
 	"n8n": {
 		"n8nNodesApiVersion": 1,
 		"credentials": [
-			"dist/credentials/UndbApi.credentials.js"
+			"dist/credentials/UndbApi.credentials.js",
+			"dist/credentials/UndbAuthApi.credentials.js"
 		],
 		"nodes": [
 			"dist/nodes/Undb/Undb.node.js"

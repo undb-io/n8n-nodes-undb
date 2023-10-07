@@ -6,7 +6,9 @@ import {
 	NodeExecutionWithMetadata,
 	NodeOperationError,
 } from 'n8n-workflow';
+import { operationFields } from './OperationDescription';
 import { executeCreateRecord } from './Operations/CreateRecord';
+import { executeGetRecords } from './Operations/GetRecords';
 
 export class Undb implements INodeType {
 	description: INodeTypeDescription = {
@@ -37,7 +39,7 @@ export class Undb implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						authentication: ['authApiToken'],
+						authentication: ['undbAuthApi'],
 					},
 				},
 			},
@@ -73,7 +75,7 @@ export class Undb implements INodeType {
 					},
 					{
 						name: 'Auth Api Token',
-						value: 'authApiToken',
+						value: 'undbAuthApi',
 					},
 				],
 				default: 'undbApi',
@@ -122,7 +124,7 @@ export class Undb implements INodeType {
 					},
 					{
 						name: 'Get Many',
-						value: 'getAll',
+						value: 'getMany',
 						description: 'Retrieve many records',
 						action: 'Get many records',
 					},
@@ -135,6 +137,7 @@ export class Undb implements INodeType {
 				],
 				default: 'get',
 			},
+			...operationFields,
 		],
 	};
 
@@ -144,6 +147,10 @@ export class Undb implements INodeType {
 		const operation = this.getNodeParameter('operation', 0);
 		if (operation === 'create') {
 			return executeCreateRecord.call(this);
+		}
+
+		if (operation === 'getMany') {
+			return executeGetRecords.call(this);
 		}
 
 		throw new NodeOperationError(this.getNode(), `Invalid operation ${operation}`);
