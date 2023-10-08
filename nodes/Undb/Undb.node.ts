@@ -12,6 +12,7 @@ import {
 import { apiRequest } from './GenericFunctions';
 import { operationFields } from './OperationDescription';
 import { executeCreateRecord } from './Operations/CreateRecord';
+import { executeDeleteRecord } from './Operations/DeleteRecord';
 import { executeGetRecord } from './Operations/GetRecord';
 import { executeGetRecords } from './Operations/GetRecords';
 
@@ -173,6 +174,10 @@ export class Undb implements INodeType {
 
 		if (operation === 'getMany') {
 			return executeGetRecords.call(this);
+		}
+
+		if (operation === 'delete') {
+			return executeDeleteRecord.call(this);
 		}
 
 		throw new NodeOperationError(this.getNode(), `Invalid operation ${operation}`);
