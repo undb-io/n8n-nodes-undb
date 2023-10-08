@@ -160,6 +160,8 @@ export class Undb implements INodeType {
 			},
 			async getViews(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 				const tableId = this.getNodeParameter('tableId', 0);
+				if (!tableId) return [];
+
 				const responseData = await apiRequest.call(
 					this,
 					'GET',
@@ -167,10 +169,12 @@ export class Undb implements INodeType {
 					{},
 				);
 
-				return responseData.table.views.map((view: IDataObject) => ({
-					name: view.name,
-					value: view.id,
-				}));
+				return (
+					responseData.table?.views.map((view: IDataObject) => ({
+						name: view.name,
+						value: view.id,
+					})) ?? []
+				);
 			},
 		},
 	};
