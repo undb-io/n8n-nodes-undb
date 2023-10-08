@@ -10,27 +10,40 @@ export async function executeCreateRecord(
 
 	for (let i = 0; i < items.length; i++) {
 		const tableId = this.getNodeParameter('tableId', i);
+		const dataToSend = this.getNodeParameter('dataToSend', i) as 'defineBelow' | 'autoMapInputData';
 
 		const endpoint = `/api/v1/openapi/tables/${tableId}/records`;
-
-		const fields = this.getNodeParameter('fieldsUi.fieldValues', i, []) as Array<{
-			fieldName: string;
-			fieldValue?: string;
-		}>;
-
 		const values: IDataObject = {};
-		for (const field of fields) {
-			values[field.fieldName] = field.fieldValue;
+
+		// user defined data
+		if (dataToSend === 'defineBelow') {
+			const fields = this.getNodeParameter('fieldsUi.fieldValues', i, []) as Array<{
+				fieldName: string;
+				fieldValue?: string;
+			}>;
+
+			for (const field of fields) {
+				values[field.fieldName] = field.fieldValue;
+			}
 		}
 
-		const responseData = await apiRequest.call(this, 'POST', endpoint, { values });
+		// use previous input data
+		else if (dataToSend === 'autoMapInputData') {
+			const data = items[i].json;
+			Object.assign(values, data);
+		}
 
-		const executionData = this.helpers.constructExecutionMetaData(
-			this.helpers.returnJsonArray(responseData as IDataObject),
-			{ itemData: { item: i } },
-		);
+		// make create record request
+		if (Object.keys(values).length) {
+			const responseData = await apiRequest.call(this, 'POST', endpoint, { values });
 
-		returnData.push(...executionData);
+			const executionData = this.helpers.constructExecutionMetaData(
+				this.helpers.returnJsonArray(responseData as IDataObject),
+				{ itemData: { item: i } },
+			);
+
+			returnData.push(...executionData);
+		}
 	}
 
 	return this.prepareOutputData(returnData);
