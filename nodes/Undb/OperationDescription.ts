@@ -5,12 +5,13 @@ export const operationFields: INodeProperties[] = [
 	//         Shared
 	// ----------------------------------
 	{
-		displayName: 'Table ID',
+		displayName: 'Table Name or ID',
 		name: 'tableId',
-		type: 'string',
+		type: 'options',
 		default: '',
 		required: true,
-		description: 'The ID of the table',
+		description:
+			'The ID of the table. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code-examples/expressions/">expression</a>.',
 		typeOptions: {
 			loadOptionsMethod: 'getTables',
 		},
