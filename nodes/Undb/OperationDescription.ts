@@ -17,6 +17,22 @@ export const operationFields: INodeProperties[] = [
 		},
 	},
 	{
+		displayName: 'View Name or ID',
+		name: 'viewId',
+		type: 'options',
+		default: '',
+		description:
+			'The ID of the view. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code-examples/expressions/">expression</a>.',
+		typeOptions: {
+			loadOptionsMethod: 'getViews',
+		},
+		displayOptions: {
+			show: {
+				operation: ['getMany'],
+			},
+		},
+	},
+	{
 		displayName: 'Record ID',
 		name: 'recordId',
 		type: 'string',

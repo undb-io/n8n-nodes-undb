@@ -158,6 +158,20 @@ export class Undb implements INodeType {
 					value: table.id,
 				}));
 			},
+			async getViews(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const tableId = this.getNodeParameter('tableId', 0);
+				const responseData = await apiRequest.call(
+					this,
+					'GET',
+					`/api/v1/openapi/tables/${tableId}`,
+					{},
+				);
+
+				return responseData.table.views.map((view: IDataObject) => ({
+					name: view.name,
+					value: view.id,
+				}));
+			},
 		},
 	};
 
