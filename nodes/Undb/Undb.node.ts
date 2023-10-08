@@ -12,6 +12,7 @@ import {
 import { apiRequest } from './GenericFunctions';
 import { operationFields } from './OperationDescription';
 import { executeCreateRecord } from './Operations/CreateRecord';
+import { executeGetRecord } from './Operations/GetRecord';
 import { executeGetRecords } from './Operations/GetRecords';
 
 export class Undb implements INodeType {
@@ -164,6 +165,10 @@ export class Undb implements INodeType {
 		const operation = this.getNodeParameter('operation', 0);
 		if (operation === 'create') {
 			return executeCreateRecord.call(this);
+		}
+
+		if (operation === 'get') {
+			return executeGetRecord.call(this);
 		}
 
 		if (operation === 'getMany') {
