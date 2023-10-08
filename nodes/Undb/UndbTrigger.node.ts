@@ -7,6 +7,7 @@ import {
 	IWebhookResponseData,
 } from 'n8n-workflow';
 import { apiRequest } from './GenericFunctions';
+import { getTables } from './Methods/GetTables';
 
 export class UndbTrigger implements INodeType {
 	description: INodeTypeDescription = {
@@ -26,20 +27,6 @@ export class UndbTrigger implements INodeType {
 			{
 				name: 'undbApi',
 				required: true,
-				displayOptions: {
-					show: {
-						authentication: ['undbApi'],
-					},
-				},
-			},
-			{
-				name: 'undbAuthApi',
-				required: true,
-				displayOptions: {
-					show: {
-						authentication: ['undbAuthApi'],
-					},
-				},
 			},
 		],
 		webhooks: [
@@ -52,6 +39,18 @@ export class UndbTrigger implements INodeType {
 		],
 		properties: [
 			{
+				displayName: 'Table Name or ID',
+				name: 'tableId',
+				type: 'options',
+				default: '',
+				required: true,
+				description:
+					'The ID of the table. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code-examples/expressions/">expression</a>.',
+				typeOptions: {
+					loadOptionsMethod: 'getTables',
+				},
+			},
+			{
 				displayName: 'Event',
 				name: 'event',
 				type: 'options',
@@ -62,12 +61,25 @@ export class UndbTrigger implements INodeType {
 						name: 'Record Added',
 						value: 'record.created',
 					},
+					{
+						name: 'Record Updated',
+						value: 'record.updated',
+					},
+					{
+						name: 'Record Deleted',
+						value: 'record.deleted',
+					},
 				],
 			},
 		],
 	};
 
-	// @ts-ignore
+	methods = {
+		loadOptions: {
+			getTables,
+		},
+	};
+
 	webhookMethods = {
 		default: {
 			async checkExists(this: IHookFunctions): Promise<boolean> {
