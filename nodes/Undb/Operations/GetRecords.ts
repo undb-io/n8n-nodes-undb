@@ -13,7 +13,7 @@ export async function executeGetRecords(this: IExecuteFunctions): Promise<INodeE
 		const responseData = await apiRequest.call(this, 'GET', endPoint, {});
 
 		const executionData = this.helpers.constructExecutionMetaData(
-			this.helpers.returnJsonArray(responseData as IDataObject),
+			this.helpers.returnJsonArray(responseData.records as IDataObject),
 			{ itemData: { item: i } },
 		);
 

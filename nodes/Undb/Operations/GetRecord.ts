@@ -15,7 +15,7 @@ export async function executeGetRecord(this: IExecuteFunctions): Promise<INodeEx
 		const responseData = await apiRequest.call(this, 'GET', endPoint, {});
 
 		const executionData = this.helpers.constructExecutionMetaData(
-			this.helpers.returnJsonArray(responseData as IDataObject),
+			this.helpers.returnJsonArray(responseData.record as IDataObject),
 			{ itemData: { item: i } },
 		);
 
