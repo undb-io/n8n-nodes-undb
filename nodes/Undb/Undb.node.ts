@@ -15,6 +15,7 @@ import { executeCreateRecord } from './Operations/CreateRecord';
 import { executeDeleteRecord } from './Operations/DeleteRecord';
 import { executeGetRecord } from './Operations/GetRecord';
 import { executeGetRecords } from './Operations/GetRecords';
+import { executeUpdateRecord } from './Operations/UpdateRecord';
 
 export class Undb implements INodeType {
 	description: INodeTypeDescription = {
@@ -166,6 +167,10 @@ export class Undb implements INodeType {
 		const operation = this.getNodeParameter('operation', 0);
 		if (operation === 'create') {
 			return executeCreateRecord.call(this);
+		}
+
+		if (operation === 'update') {
+			return executeUpdateRecord.call(this);
 		}
 
 		if (operation === 'get') {
