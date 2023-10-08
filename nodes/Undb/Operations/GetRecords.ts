@@ -8,6 +8,7 @@ export async function executeGetRecords(this: IExecuteFunctions): Promise<INodeE
 
 	for (let i = 0; i < items.length; i++) {
 		const tableId = this.getNodeParameter('tableId', i) as string;
+
 		const endPoint = `/api/v1/openapi/tables/${tableId}/records`;
 
 		const responseData = await apiRequest.call(this, 'GET', endPoint, {});
