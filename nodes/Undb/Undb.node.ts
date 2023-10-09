@@ -1,21 +1,18 @@
 import {
-	IDataObject,
 	IExecuteFunctions,
-	ILoadOptionsFunctions,
 	INodeExecutionData,
-	INodePropertyOptions,
 	INodeType,
 	INodeTypeDescription,
 	NodeExecutionWithMetadata,
 	NodeOperationError,
 } from 'n8n-workflow';
-import { apiRequest } from './GenericFunctions';
+import { executeCreateRecord } from './Actions/CreateRecord';
+import { executeDeleteRecord } from './Actions/DeleteRecord';
+import { executeGetRecord } from './Actions/GetRecord';
+import { executeGetRecords } from './Actions/GetRecords';
+import { executeUpdateRecord } from './Actions/UpdateRecord';
+import { getTables, getViews } from './Methods/GetTables';
 import { operationFields } from './OperationDescription';
-import { executeCreateRecord } from './Operations/CreateRecord';
-import { executeDeleteRecord } from './Operations/DeleteRecord';
-import { executeGetRecord } from './Operations/GetRecord';
-import { executeGetRecords } from './Operations/GetRecords';
-import { executeUpdateRecord } from './Operations/UpdateRecord';
 
 export class Undb implements INodeType {
 	description: INodeTypeDescription = {
@@ -150,32 +147,8 @@ export class Undb implements INodeType {
 
 	methods = {
 		loadOptions: {
-			async getTables(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
-				const responseData = await apiRequest.call(this, 'GET', '/api/v1/openapi/tables', {});
-
-				return responseData.tables.map((table: IDataObject) => ({
-					name: table.name,
-					value: table.id,
-				}));
-			},
-			async getViews(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
-				const tableId = this.getNodeParameter('tableId', 0);
-				if (!tableId) return [];
-
-				const responseData = await apiRequest.call(
-					this,
-					'GET',
-					`/api/v1/openapi/tables/${tableId}`,
-					{},
-				);
-
-				return (
-					responseData.table?.views.map((view: IDataObject) => ({
-						name: view.name,
-						value: view.id,
-					})) ?? []
-				);
-			},
+			getTables,
+			getViews,
 		},
 	};
 

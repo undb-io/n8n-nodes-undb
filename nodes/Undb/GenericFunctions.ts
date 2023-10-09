@@ -22,8 +22,9 @@ export async function apiRequest(
 	uri?: string,
 	option: IDataObject = {},
 ): Promise<any> {
-	const authenticationMethod = this.getNodeParameter('authentication', 0) as string;
-	const credentials = await this.getCredentials(authenticationMethod);
+	const authenticationMethod = this.getNodeParameter('authentication', 0) as number;
+	const auth = authenticationMethod === 0 ? 'undbApi' : String(authenticationMethod);
+	const credentials = await this.getCredentials(auth);
 
 	if (credentials === undefined) {
 		throw new NodeOperationError(this.getNode(), 'No credentials got returned!');
@@ -50,5 +51,5 @@ export async function apiRequest(
 		delete options.body;
 	}
 
-	return this.helpers.requestWithAuthentication.call(this, authenticationMethod, options);
+	return this.helpers.requestWithAuthentication.call(this, auth, options);
 }
