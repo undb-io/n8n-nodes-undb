@@ -6,13 +6,13 @@ import {
 	NodeExecutionWithMetadata,
 	NodeOperationError,
 } from 'n8n-workflow';
+import { executeCreateRecord } from './Actions/CreateRecord';
+import { executeDeleteRecord } from './Actions/DeleteRecord';
+import { executeGetRecord } from './Actions/GetRecord';
+import { executeGetRecords } from './Actions/GetRecords';
+import { executeUpdateRecord } from './Actions/UpdateRecord';
 import { getTables, getViews } from './Methods/GetTables';
 import { operationFields } from './OperationDescription';
-import { executeCreateRecord } from './Operations/CreateRecord';
-import { executeDeleteRecord } from './Operations/DeleteRecord';
-import { executeGetRecord } from './Operations/GetRecord';
-import { executeGetRecords } from './Operations/GetRecords';
-import { executeUpdateRecord } from './Operations/UpdateRecord';
 
 export class Undb implements INodeType {
 	description: INodeTypeDescription = {

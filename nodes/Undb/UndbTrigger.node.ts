@@ -27,6 +27,20 @@ export class UndbTrigger implements INodeType {
 			{
 				name: 'undbApi',
 				required: true,
+				displayOptions: {
+					show: {
+						authentication: ['undbApi'],
+					},
+				},
+			},
+			{
+				name: 'undbAuthApi',
+				required: true,
+				displayOptions: {
+					show: {
+						authentication: ['undbAuthApi'],
+					},
+				},
 			},
 		],
 		webhooks: [
@@ -38,6 +52,23 @@ export class UndbTrigger implements INodeType {
 			},
 		],
 		properties: [
+			{
+				displayName: 'Authentication',
+				name: 'authentication',
+				type: 'options',
+				options: [
+					{
+						name: 'Api Token',
+						value: 'undbApi',
+					},
+					{
+						name: 'Auth Api Token',
+						value: 'undbAuthApi',
+					},
+				],
+				default: 'undbApi',
+			},
+
 			{
 				displayName: 'Table Name or ID',
 				name: 'tableId',
@@ -58,18 +89,35 @@ export class UndbTrigger implements INodeType {
 				default: 'record.created',
 				options: [
 					{
-						name: 'Record Added',
-						value: 'record.created',
+						name: 'Record All Event',
+						value: 'record.*',
 					},
 					{
-						name: 'Record Updated',
-						value: 'record.updated',
+						name: 'Record Bulk Created',
+						value: 'record.bulk_created',
+					},
+					{
+						name: 'Record Bulk Deleted',
+						value: 'record.bulk_deleted',
+					},
+					{
+						name: 'Record Bulk Updated',
+						value: 'record.bulk_updated',
+					},
+					{
+						name: 'Record Created',
+						value: 'record.created',
 					},
 					{
 						name: 'Record Deleted',
 						value: 'record.deleted',
 					},
+					{
+						name: 'Record Updated',
+						value: 'record.updated',
+					},
 				],
+				description: 'The event to listen to',
 			},
 		],
 	};
@@ -86,32 +134,53 @@ export class UndbTrigger implements INodeType {
 				const webhookData = this.getWorkflowStaticData('node');
 				const webhookUrl = this.getNodeWebhookUrl('default');
 				const event = this.getNodeParameter('event') as string;
-				const endpoint = `/api/v1/openapi/tables/{tableId}/records`;
-				const { hooks: webhooks } = await apiRequest.call(this, 'GET', endpoint, {});
-				for (const webhook of webhooks) {
-					if (webhook.target_url === webhookUrl && webhook.event === event) {
-						webhookData.webhookId = webhook.hook_id;
-						return true;
-					}
+				const tableId = this.getNodeParameter('tableId') as string;
+
+				const endpoint = `/api/v1/openapi/tables/${tableId}/webhooks/${webhookData.webhookId}`;
+				const { webhook } = await apiRequest.call(this, 'GET', endpoint, {});
+				if (!webhook) return false;
+
+				if (webhook.url === webhookUrl && webhook.event === event) {
+					webhookData.webhookId = webhook.id;
+					return true;
 				}
 				return false;
 			},
 			async create(this: IHookFunctions): Promise<boolean> {
 				const webhookUrl = this.getNodeWebhookUrl('default');
 				const webhookData = this.getWorkflowStaticData('node');
+
+				const tableId = this.getNodeParameter('tableId') as string;
 				const event = this.getNodeParameter('event') as string;
+
+				const endpoint = `/api/v1/openapi/tables/${tableId}/webhooks`;
+
 				const body: IDataObject = {
+					enabled: true,
+					method: 'POST',
+					url: webhookUrl,
+					name: this.getWorkflow().name,
 					event,
-					target_url: webhookUrl,
+					headers: {},
+					target: {
+						id: tableId,
+						type: 'table',
+						event,
+					},
 				};
-				const webhook = await apiRequest.call(this, 'POST', '/hook', body);
-				webhookData.webhookId = webhook.hook_id;
+				const webhook = await apiRequest.call(this, 'POST', endpoint, body);
+
+				webhookData.webhookId = webhook.id;
 				return true;
 			},
 			async delete(this: IHookFunctions): Promise<boolean> {
 				const webhookData = this.getWorkflowStaticData('node');
+				const tableId = this.getNodeParameter('tableId') as string;
+
+				const endpoint = `/api/v1/openapi/tables/${tableId}/webhooks/${webhookData.webhookId}`;
+
 				try {
-					await apiRequest.call(this, 'DELETE', `/hook/${webhookData.webhookId}`, {});
+					await apiRequest.call(this, 'DELETE', endpoint, {});
 				} catch (error) {
 					return false;
 				}
@@ -122,8 +191,16 @@ export class UndbTrigger implements INodeType {
 	};
 
 	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
+		const bodyData = this.getBodyData();
+
+		const returnData: IDataObject[] = [];
+
+		returnData.push({
+			body: bodyData,
+		});
+
 		return {
-			workflowData: [],
+			workflowData: [this.helpers.returnJsonArray(bodyData)],
 		};
 	}
 }
