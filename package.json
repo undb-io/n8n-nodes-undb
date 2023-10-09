@@ -53,6 +53,9 @@
 		"release-it": "^16.2.1",
 		"typescript": "~5.2.0"
 	},
+	"publishConfig": {
+		"access": "public"
+	},
 	"config": {
 		"commitizen": {
 			"path": "./node_modules/cz-conventional-changelog"
